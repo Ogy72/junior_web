@@ -1,0 +1,13 @@
+.col {
+    background-color: rgba(0, 0, 255, 0.466);
+    border: 1px solid;
+    padding: 0.4em;
+    margin-top: 0.5em;
+}
+
+[class^="col-4"]{
+    background-color: red;
+    border: 1px solid;
+    padding: 0.4em;
+    margin-top: 0.5em;
+}
