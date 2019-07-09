@@ -1,13 +1,22 @@
 .col {
     background-color: rgba(0, 0, 255, 0.466);
-    border: 1px solid;
-    padding: 0.4em;
-    margin-top: 0.5em;
+    border: 1px #b1b0b0 solid;
 }
 
-[class^="col-4"]{
-    background-color: red;
-    border: 1px solid;
-    padding: 0.4em;
-    margin-top: 0.5em;
+.konten, .sidebar{
+    background-color: rgba(0, 0, 255, 0.466);
+    border: 1px #b1b0b0 solid;
+    height: 450px;
+}
+
+.top-konten{
+    background-color: rgba(0, 0, 255, 0.466);
+    border: 1px #b1b0b0 solid;
+    height: 300px;
+}
+
+.bottom-konten{
+    background-color: rgba(0, 0, 255, 0.466);
+    border: 1px #b1b0b0 solid;
+    height: 148px;
 }
