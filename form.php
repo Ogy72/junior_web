@@ -17,7 +17,7 @@
             <div class="col-8">
             <h3>Input Data Peserta</h3>
             <br>
-                <form action="">
+                <form action="show_form.php" method="post">
                     <div class="form-group">
                         <div class="form-row">
                             <div class="form-group col-6">

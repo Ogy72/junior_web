@@ -12,7 +12,7 @@
 
 </head>
 <body>
-    
+    <h3>Style</h3>
 <div class="container mt-3">
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <a class="navbar-brand" href="navbar.php">
