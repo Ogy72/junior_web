@@ -21,30 +21,32 @@
         <div class="col-4"></div>
         <div class="col-4">
             <h4>Input Prodi</h4>
-            <form action="add_jurusan.php" method="post">
+            <form action="add_prodi.php" method="post">
                 <div class="form-group">
-                    <label for="kd_jurs">Kode Prodi</label>
-                    <input id="kd_jurs" class="form-control" type="text" name="kd_jurs" placeholder="Masukkan Kode Jurusan" required>
+                    <label for="kd_prodi">Kode Prodi</label>
+                    <input id="kd_prodi" class="form-control" type="text" name="kd_prodi" placeholder="Masukkan Kode Prodi" required>
+                    <input type="hidden" name="kd_prodi2" id="kd_prodi2">
                 </div>
                 <div class="form-group">
-                    <label for="nama_jurs">Nama Prodi</label>
-                    <input id="nama_jurs" class="form-control" type="text" name="nama_jurs" placeholder="Masukkan Nama Jurusan" required>
+                    <label for="nama_prodi">Nama Prodi</label>
+                    <input id="nama_prodi" class="form-control" type="text" name="nama_prodi" placeholder="Masukkan Nama Prodi" required>
                 </div>
                 <div class="form-group">
                     <label for="kd_jurs">Kode Jurusan</label>
                     <select id="kd_jurs" class="form-control" name="kd_jurs">
+                        <option selected>Pilih Jurusan</option>
                     <?
                         $query = "SELECT * FROM jurusan";
-                        $selct = mysqli_query($conn, $query)
+                        $selct = mysqli_query($conn, $query);
 
                         foreach($selct as $data){
-                        <option>$data['kd_jusr']</option>
+                            echo '
+                            <option value="'.$data["kd_jurs"].'">'.$data["kd_jurs"].' - '.$data["nama_jurs"].'</option>';
                         }
                     ?>
                     </select>
-                    </div>
                 </div>
-                <input type="submit" name="simpan" value="Simpan" class="btn btn-primary" style="width:100%">
+                <input id="tombol" type="submit" name="simpan" value="Simpan" class="btn btn-primary" style="width:100%">
             </form>
         </div>
         <div class="col-4"></div>
@@ -52,11 +54,29 @@
 
     <?
         if(isset($_POST["simpan"])){
+            $btn = $_POST["simpan"];
+            $kd_prodi = $_POST["kd_prodi"];
+            $kd_prodi2 = $_POST["kd_prodi2"];
+            $nama_prodi = $_POST["nama_prodi"];
             $kd_jurs = $_POST["kd_jurs"];
-            $nama_jurs = $_POST["nama_jurs"];
-            
-            $query_insert = "INSERT INTO jurusan VALUES ('$kd_jurs','$nama_jurs')";
-            mysqli_query($conn, $query_insert);
+
+            if($btn == "Simpan"){
+
+                $p = "SELECT * FROM prodi WHERE kd_prodi='$kd_prodi'";
+
+                $row = mysqli_num_rows(mysqli_query($conn, $p));
+                if($row > 0){
+                    echo '<script> alert("Data Sudah Ada !")</script>';
+                } else {
+                    $query_insert = "INSERT INTO prodi VALUES ('$kd_prodi','$nama_prodi','$kd_jurs')";
+                    mysqli_query($conn, $query_insert);
+                }
+            }
+            else if($btn == "Edit"){
+                $query_update = "UPDATE prodi SET kd_prodi='$kd_prodi', nama_prodi='$nama_prodi', kd_jurs='$kd_jurs' WHERE kd_prodi='$kd_prodi2'";
+                mysqli_query($conn, $query_update);
+            }
+        
         }
     ?>
 
@@ -65,7 +85,8 @@
             <table class="table table-bordered">
                 <thead class="thead-dark">
                     <tr>
-                        <th>Kode Jurusan</th>
+                        <th>Kode Prodi</th>
+                        <th>Nama Prodi</th>
                         <th>Nama Jurusan</th>
                         <th>Options</th>
                     </tr>
@@ -73,23 +94,25 @@
                 <tbody>
                 <?
                     if(isset($_GET["id"])){
-                        $kd_jurs = $_GET["id"];
+                        $kd_prodi = $_GET["id"];
 
-                        $query_delete = "DELETE FROM jurusan WHERE kd_jurs='$kd_jurs'";
+                        $query_delete = "DELETE FROM prodi WHERE kd_prodi='$kd_prodi'";
                         mysqli_query($conn, $query_delete);
                     };
 
-                    $query_select = "SELECT * FROM jurusan";
+                    $query_select = "SELECT prodi.kd_prodi, prodi.nama_prodi, jurusan.nama_jurs FROM prodi, jurusan 
+                    WHERE prodi.kd_jurs=jurusan.kd_jurs";
                     $data = mysqli_query($conn, $query_select);
 
                     foreach($data as $d){
                     echo "
                     <tr>
-                        <td style='width:250px'>$d[kd_jurs]</td>
+                        <td style='width:250px'>$d[kd_prodi]</td>
+                        <td>$d[nama_prodi]</td>
                         <td>$d[nama_jurs]</td>
                         <td style='width:250px'>";?>
-                            <input type="button" id="<? echo $d['kd_jurs'] ?>" value="Edit" class="btn btn-success btn-sm edit">
-                            <a href="add_jurusan.php?id=<? echo $d['kd_jurs'] ?>" onClick='javascript: return confirm("Hapus Data ?")' class="btn btn-danger btn-sm del">Hapus</a>
+                            <input type="button" id="<? echo $d['kd_prodi'] ?>" value="Edit" class="btn btn-success btn-sm edit">
+                            <a href="add_prodi.php?id=<? echo $d['kd_prodi'] ?>" onClick='javascript: return confirm("Hapus Data ?")' class="btn btn-danger btn-sm del">Hapus</a>
                         </td>
                     </tr>
                 <?
@@ -113,8 +136,21 @@
 $(document).ready(function(){
 
     $('.edit').click(function(){
-        var $id = $(this).attr("id");
-        
+        var kd = $(this).attr("id");
+        var get = "data prodi";
+        $.ajax({
+            url:"edited.php",
+            method:"POST",
+            data:{kd:kd, get:get},
+            dataType:"json",
+            success:function(data){
+                $("#kd_prodi").val(data.kd_prodi);
+                $("#kd_prodi2").val(data.kd_prodi);
+                $("#nama_prodi").val(data.nama_prodi);
+                $("#kd_jurs").val(data.kd_jurs);
+                $("#tombol").val("Edit");
+            }
+        });
     });
 })
 </script>

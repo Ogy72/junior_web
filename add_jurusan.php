@@ -25,12 +25,13 @@
                 <div class="form-group">
                     <label for="kd_jurs">Kode Jurusan</label>
                     <input id="kd_jurs" class="form-control" type="text" name="kd_jurs" placeholder="Masukkan Kode Jurusan" required>
+                    <input type="hidden" name="kd_jurs2" id="kd_jurs2">
                 </div>
                 <div class="form-group">
                     <label for="nama_jurs">Nama Jurusan</label>
                     <input id="nama_jurs" class="form-control" type="text" name="nama_jurs" placeholder="Masukkan Nama Jurusan" required>
                 </div>
-                <input type="submit" name="simpan" value="Simpan" class="btn btn-primary" style="width:100%">
+                <input id="tombol" type="submit" name="simpan" value="Simpan" class="btn btn-primary" style="width:100%">
             </form>
         </div>
         <div class="col-4"></div>
@@ -38,11 +39,30 @@
 
     <?
         if(isset($_POST["simpan"])){
-            $kd_jurs = $_POST["kd_jurs"];
-            $nama_jurs = $_POST["nama_jurs"];
-            
-            $query_insert = "INSERT INTO jurusan VALUES ('$kd_jurs','$nama_jurs')";
-            mysqli_query($conn, $query_insert);
+            $btn = $_POST["simpan"];
+                
+            if($btn == "Simpan"){
+                $kd_jurs = $_POST["kd_jurs"];
+                $nama_jurs = $_POST["nama_jurs"];
+                $q = "SELECT * FROM jurusan WHERE kd_jurs='$kd_jurs'";
+
+                $cek = mysqli_num_rows(mysqli_query($conn, $q));
+                if($cek > 0 ){
+                    echo '<script> alert("Data Sudah Ada !")</script>';
+                } else {
+                    
+                    $query_insert = "INSERT INTO jurusan VALUES ('$kd_jurs','$nama_jurs')";
+                    mysqli_query($conn, $query_insert);
+                }
+            } 
+            else if($btn == "Edit") {
+                $kd_jurs = $_POST["kd_jurs"];
+                $kd_jurs2 = $_POST["kd_jurs2"];
+                $nama_jurs = $_POST["nama_jurs"];
+
+                $query_update = "UPDATE jurusan SET kd_jurs='$kd_jurs', nama_jurs='$nama_jurs' WHERE kd_jurs='$kd_jurs2'";
+                mysqli_query($conn, $query_update);
+            }
         }
     ?>
 
@@ -99,8 +119,20 @@
 $(document).ready(function(){
 
     $('.edit').click(function(){
-        var $id = $(this).attr("id");
-        
+        var kd = $(this).attr("id");
+        var get = "data jurusan";
+        $.ajax({
+            url:"edited.php",
+            method:"POST",
+            data:{kd:kd, get:get},
+            dataType:"json",
+            success:function(data){
+                $("#kd_jurs").val(data.kd_jurs);
+                $("#kd_jurs2").val(data.kd_jurs);
+                $("#nama_jurs").val(data.nama_jurs);
+                $("#tombol").val("Edit");
+            }
+        });    
     });
 })
 </script>
