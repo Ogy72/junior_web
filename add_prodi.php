@@ -51,7 +51,7 @@
         </div>
         <div class="col-4"></div>
     </div>
-
+    <!-- proses -->
     <?
         if(isset($_POST["simpan"])){
             $btn = $_POST["simpan"];
@@ -124,7 +124,6 @@
         </div>    
     </div>
 </div>
-    
     <!-- link js -->
     <script src="js/jquery.min.js"></script>
     <script src="js/popper.min.js"></script>
